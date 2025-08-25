@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mana vienkāršā mājaslapa</title>
+  <style>
+    :root {
+      --bg: #f7f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --primary: #2563eb;
+      --border: #e5e7eb;
+    }
+    .dark {
+      --bg: #0b1220;
+      --card: #111827;
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --primary: #60a5fa;
+      --border: #1f2937;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: var(--bg); color: var(--text);
+    }
+    .container { max-width: 1000px; margin: 0 auto; padding: 24px; }
+    header { position: sticky; top: 0; backdrop-filter: saturate(180%) blur(8px); background: color-mix(in oklab, var(--bg) 86%, transparent); border-bottom: 1px solid var(--border); z-index: 10; }
+    .nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .brand .logo { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--primary), #8b5cf6); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+    .nav a { text-decoration: none; color: var(--text); padding: 8px 12px; border-radius: 10px; }
+    .nav a:hover { background: var(--card); }
+    .menu { display: flex; gap: 6px; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); padding: 9px 14px; border-radius: 12px; cursor: pointer; }
+    .btn:active { transform: translateY(1px); }
+    .primary { border-color: color-mix(in oklab, var(--primary) 50%, var(--border)); }
+
+    .hero { padding: 48px 0; display: grid; gap: 18px; }
+    .hero h1 { font-size: clamp(28px, 6vw, 44px); margin: 0 0 8px; }
+    .hero p { margin: 0; color: var(--muted); font-size: 18px; }
+
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+    .col-4 { grid-column: span 12; }
+    @media (min-width: 720px){ .col-4 { grid-column: span 4; } }
+
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: 0 6px 18px rgba(0,0,0,.06); }
+    .card h3 { margin: 0 0 8px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); }
+
+    section { padding: 28px 0; }
+
+    form { display: grid; gap: 12px; }
+    label { font-size: 14px; color: var(--muted); }
+    input, textarea, select { width: 100%; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); color: var(--text); }
+    textarea { min-height: 110px; resize: vertical; }
+
+    .options { display: grid; gap: 10px; }
+    .option-row { display: flex; align-items: center; justify-content: space-between; border: 1px solid var(--border); background: var(--card); padding: 10px 12px; border-radius: 12px; }
+
+    footer { padding: 32px 0 48px; color: var(--muted); text-align: center; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <span>Mans projekts</span>
+      </div>
+      <nav class="menu" aria-label="Galvenā izvēlne">
+        <a href="#sakums">Sākums</a>
+        <a href="#opcijas">Opcijas</a>
+        <a href="#kontakti">Kontakti</a>
+        <button class="btn" id="themeToggle" type="button" title="Pārslēgt gaišo/tumšo">🌗&nbsp;Tēma</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="sakums" class="hero">
+      <h1>Vienkārša mājaslapa</h1>
+      <p>Šis ir gatavs starts ar dažām pavisam vienkāršām opcijām. Viss vienā failā — HTML, CSS un neliels JavaScript.</p>
+      <div>
+        <button class="btn primary" onclick="document.querySelector('#kontakti').scrollIntoView({behavior:'smooth'})">Sazināties</button>
+        <button class="btn" onclick="alert('Sveiki! Šis ir piemēra paziņojums.')">Parādīt paziņojumu</button>
+      </div>
+    </section>
+
+    <section id="opcijas">
+      <h2>Vienkāršas opcijas</h2>
+      <div class="grid">
+        <div class="col-4">
+          <div class="card">
+            <h3>Tēmas pārslēgšana</h3>
+            <p>Pārslēdz starp gaišo un tumšo režīmu.</p>
+            <div class="options" style="margin-top:12px">
+              <div class="option-row">
+                <span>Gaišs/Tumšs</span>
+                <label class="switch">
+                  <input id="themeSwitch" type="checkbox" />
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card">
+            <h3>Valoda</h3>
+            <p>Izvēlies satura valodu (piemērs).</p>
+            <div class="options" style="margin-top:12px">
+              <div class="option-row">
+                <span>Valoda</span>
+                <select id="langSelect" aria-label="Valodas izvēle">
+                  <option value="lv" selected>Latviešu</option>
+                  <option value="en">English</option>
+                  <option value="ru">Русский</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="card">
+            <h3>Paziņojumi</h3>
+            <p>Ieslēdz vai izslēdz vienkāršus paziņojumus.</p>
+            <div class="options" style="margin-top:12px">
+              <div class="option-row">
+                <span>Rādīt paziņojumus</span>
+                <input id="notifyToggle" type="checkbox" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="kontakti">
+      <h2>Kontakti</h2>
+      <div class="card">
+        <form id="contactForm">
+          <div>
+            <label for="name">Vārds</label>
+            <input id="name" name="name" type="text" placeholder="Jūsu vārds" required />
+          </div>
+          <div>
+            <label for="email">E‑pasts</label>
+            <input id="email" name="email" type="email" placeholder="vards@epasts.lv" required />
+          </div>
+          <div>
+            <label for="message">Ziņa</label>
+            <textarea id="message" name="message" placeholder="Ko vēlaties uzrakstīt?" required></textarea>
+          </div>
+          <button class="btn primary" type="submit">Nosūtīt</button>
+        </form>
+      </div>
+    </section>
+
+    <footer>
+      <small>© <span id="year"></span> Mans projekts. Visi tiesības aizsargātas.</small>
+    </footer>
+  </main>
+
+  <script>
+    // ——— Vienkāršs JS: tēma, iestatījumi, forma ———
+    const root = document.documentElement;
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const themeSwitch = document.getElementById('themeSwitch');
+    const notifyToggle = document.getElementById('notifyToggle');
+    const langSelect = document.getElementById('langSelect');
+
+    // Ielādēt iestatījumus no localStorage
+    const settings = JSON.parse(localStorage.getItem('siteSettings') || '{}');
+    if (settings.theme === 'dark') { root.classList.add('dark'); themeSwitch.checked = true; }
+    if (settings.notify === true) { notifyToggle.checked = true; }
+    if (settings.lang) { langSelect.value = settings.lang; }
+
+    // Tēmas pārslēgšana
+    function toggleTheme(force) {
+      const isDark = force !== undefined ? force : !root.classList.contains('dark');
+      root.classList.toggle('dark', isDark);
+      themeSwitch.checked = isDark;
+      saveSettings();
+    }
+    themeToggleBtn.addEventListener('click', () => toggleTheme());
+    themeSwitch.addEventListener('change', e => toggleTheme(e.target.checked));
+
+    // Paziņojumu izmēģinājums
+    notifyToggle.addEventListener('change', () => {
+      saveSettings();
+      if (notifyToggle.checked) {
+        showToast('Paziņojumi ir ieslēgti.');
+      } else {
+        showToast('Paziņojumi ir izslēgti.');
+      }
+    });
+
+    // Valodas piemērs (šobrīd tikai parāda paziņojumu)
+    langSelect.addEventListener('change', () => {
+      saveSettings();
+      showToast('Valoda iestatīta: ' + langSelect.options[langSelect.selectedIndex].text);
+    });
+
+    // Kontaktu forma (demo)
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(e.target).entries());
+      console.log('Forma:', data);
+      showToast('Paldies! Ziņa nosūtīta (demo).');
+      e.target.reset();
+    });
+
+    // Vienkāršs toast paziņojums
+    function showToast(text) {
+      const t = document.createElement('div');
+      t.textContent = text;
+      t.setAttribute('role', 'status');
+      Object.assign(t.style, {
+        position: 'fixed', insetInline: 'auto 16px', left: '16px', bottom: '16px',
+        padding: '10px 14px', background: 'var(--card)', color: 'var(--text)',
+        border: '1px solid var(--border)', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,.18)',
+        zIndex: 50
+      });
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2600);
+    }
+
+    function saveSettings() {
+      localStorage.setItem('siteSettings', JSON.stringify({
+        theme: root.classList.contains('dark') ? 'dark' : 'light',
+        notify: !!notifyToggle.checked,
+        lang: langSelect.value
+      }));
+    }
+
+    // Gads kājenē
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
