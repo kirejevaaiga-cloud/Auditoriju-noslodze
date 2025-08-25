@@ -18,6 +18,7 @@ select, input[type="text"] { width:100%; padding:5px; box-sizing:border-box;}
 input.invalid { border:2px solid red;}
 .time-range { display:flex; gap:5px; justify-content:center; }
 .time-range input { width:50%; }
+.delete-btn { background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -32,10 +33,11 @@ input.invalid { border:2px solid red;}
 <thead>
 <tr>
 <th>Auditorija</th>
-<th>Laiks (no–līdz)</th>
+<th>Laiks</th>
 <th>Mācību pasākums</th>
 <th>Lektors</th>
 <th>RIIMC atbildīgais speciālists</th>
+<th>Dzēst</th>
 </tr>
 </thead>
 <tbody>
@@ -56,67 +58,65 @@ updateDateTime();
 // TABULAS FUNKCIJAS
 const tableBody = document.querySelector("#dataTable tbody");
 const auditorijas = ["101","102","103","104","105","106","1. datortelpa","2. datortelpa","Zāle","Sporta zāle"];
+const riimcList = [
+  "Aiga Kirejeva, t. 67105540",
+  "Aleksejs Lukjančikovs, t. 67105271",
+  "Dace Sondare, t. 67105541",
+  "Daina Keidāne, t. 67105550",
+  "Daina Kupča, t. 67105543",
+  "Ilze Kadiķe, t. 67105545",
+  "Inga Draveniece, t. 67105547",
+  "Inga Liepniece, t. 67105544",
+  "Iveta Razumovska, t. 67105534",
+  "Jeļena Griezne-Dubrovska, t.67105129",
+  "Kitija Čipāne, t. 67105546",
+  "Kristīne Kalniņa, t. 67105579",
+  "Sarmīte Katkeviča, t. 67105581"
+];
 
-function addRow(data={auditorija:"", laiksNo:"", laiksLidz:"", macibu:"", lektors:"", riimc:""}){
+function addRow(data={auditorija:"", laiksNo:"", laiksLidz:"", macibu:"", lektors:"", riimc:""}) {
   const row = document.createElement("tr");
 
   // Auditorija
-  const td1=document.createElement("td");
-  const select=document.createElement("select");
-  auditorijas.forEach(a=>{ const option=document.createElement("option"); option.value=a; option.textContent=a; if(data.auditorija===a) option.selected=true; select.appendChild(option);});
-  select.onchange=saveData;
-  td1.appendChild(select);
+  const td1 = document.createElement("td");
+  const selectAud = document.createElement("select");
+  auditorijas.forEach(a => { 
+    const option = document.createElement("option"); 
+    option.value = a; 
+    option.textContent = a; 
+    if(data.auditorija === a) option.selected = true; 
+    selectAud.appendChild(option);
+  });
+  selectAud.onchange = saveData;
+  td1.appendChild(selectAud);
 
   // Laiks (no–līdz)
-  const td2=document.createElement("td");
-  const divRange=document.createElement("div"); divRange.className="time-range";
-  const inputNo=document.createElement("input"); inputNo.type="text"; inputNo.placeholder="12:00"; inputNo.value=data.laiksNo;
-  const inputLidz=document.createElement("input"); inputLidz.type="text"; inputLidz.placeholder="13:00"; inputLidz.value=data.laiksLidz;
-  inputNo.oninput=()=>{validateTime(inputNo); saveData();}
-  inputLidz.oninput=()=>{validateTime(inputLidz); saveData();}
-  divRange.appendChild(inputNo); divRange.appendChild(inputLidz);
+  const td2 = document.createElement("td");
+  const divRange = document.createElement("div"); divRange.className = "time-range";
+  const inputNo = document.createElement("input"); 
+  inputNo.type = "text"; 
+  inputNo.placeholder = "HH:MM"; 
+  inputNo.value = data.laiksNo; 
+  inputNo.oninput = () => { validateTime(inputNo); saveData(); }
+
+  const inputLidz = document.createElement("input"); 
+  inputLidz.type = "text"; 
+  inputLidz.placeholder = "HH:MM"; 
+  inputLidz.value = data.laiksLidz; 
+  inputLidz.oninput = () => { validateTime(inputLidz); saveData(); }
+
+  divRange.appendChild(inputNo); 
+  divRange.appendChild(inputLidz);
   td2.appendChild(divRange);
 
   // Mācību pasākums
-  const td3=document.createElement("td");
-  const inputMacibu=document.createElement("input"); inputMacibu.type="text"; inputMacibu.value=data.macibu; inputMacibu.oninput=saveData; td3.appendChild(inputMacibu);
+  const td3 = document.createElement("td");
+  const inputMacibu = document.createElement("input"); 
+  inputMacibu.type = "text"; 
+  inputMacibu.value = data.macibu; 
+  inputMacibu.oninput = saveData; 
+  td3.appendChild(inputMacibu);
 
   // Lektors
-  const td4=document.createElement("td");
-  const inputLektors=document.createElement("input"); inputLektors.type="text"; inputLektors.value=data.lektors; inputLektors.oninput=saveData; td4.appendChild(inputLektors);
-
-  // RIIMC
-  const td5=document.createElement("td");
-  const inputRiimc=document.createElement("input"); inputRiimc.type="text"; inputRiimc.value=data.riimc; inputRiimc.oninput=saveData; td5.appendChild(inputRiimc);
-
-  row.appendChild(td1); row.appendChild(td2); row.appendChild(td3); row.appendChild(td4); row.appendChild(td5);
-  tableBody.appendChild(row);
-}
-
-// Validācija HH:MM
-function validateTime(input){
-  const regex=/^([01]\d|2[0-3]):([0-5]\d)$/;
-  if(!regex.test(input.value)&&input.value!==""){ input.classList.add("invalid"); } else { input.classList.remove("invalid"); }
-}
-
-// LocalStorage
-function saveData(){
-  const rows=tableBody.querySelectorAll("tr");
-  const data=[];
-  rows.forEach(row=>{
-    const select=row.querySelector("select");
-    const inputs=row.querySelectorAll("input");
-    data.push({ auditorija:select.value, laiksNo:inputs[0].value, laiksLidz:inputs[1].value, macibu:inputs[2].value, lektors:inputs[3].value, riimc:inputs[4].value });
-  });
-  localStorage.setItem("grafiksData",JSON.stringify(data));
-}
-
-function loadData(){
-  const data=JSON.parse(localStorage.getItem("grafiksData"))||[];
-  data.forEach(row=>addRow(row));
-}
-
-loadData();
-</script>
-</body>
-</html>
+  const td4 = document.createElement("td");
+  const inputLektors = document.createElement("input")
