@@ -18,7 +18,7 @@ select, input[type="text"] { width:100%; padding:5px; box-sizing:border-box;}
 input.invalid { border:2px solid red;}
 .time-range { display:flex; gap:5px; justify-content:center; }
 .time-range input { width:50%; }
-.delete-btn { background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:5px; cursor:pointer; }
+.delete-btn { background:#dc3545; color:white; border:none; padding:2px 6px; border-radius:50%; cursor:pointer; font-weight:bold; margin-left:5px; }
 </style>
 </head>
 <body>
@@ -37,7 +37,6 @@ input.invalid { border:2px solid red;}
 <th>Mācību pasākums</th>
 <th>Lektors</th>
 <th>RIIMC atbildīgais speciālists</th>
-<th>Dzēst</th>
 </tr>
 </thead>
 <tbody>
@@ -119,4 +118,77 @@ function addRow(data={auditorija:"", laiksNo:"", laiksLidz:"", macibu:"", lektor
 
   // Lektors
   const td4 = document.createElement("td");
-  const inputLektors = document.createElement("input")
+  const inputLektors = document.createElement("input"); 
+  inputLektors.type = "text"; 
+  inputLektors.value = data.lektors; 
+  inputLektors.oninput = saveData; 
+  td4.appendChild(inputLektors);
+
+  // RIIMC atbildīgais speciālists + dzēst poga
+  const td5 = document.createElement("td");
+  const selectRiimc = document.createElement("select");
+  riimcList.forEach(r => { 
+    const option = document.createElement("option"); 
+    option.value = r; 
+    option.textContent = r; 
+    if(data.riimc === r) option.selected = true; 
+    selectRiimc.appendChild(option);
+  });
+  selectRiimc.onchange = saveData;
+  td5.appendChild(selectRiimc);
+
+  // Dzēšanas poga kā krustiņš
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "×"; // krustiņš
+  deleteBtn.className = "delete-btn";
+  deleteBtn.onclick = () => { row.remove(); saveData(); };
+  td5.appendChild(deleteBtn);
+
+  row.appendChild(td1);
+  row.appendChild(td2);
+  row.appendChild(td3);
+  row.appendChild(td4);
+  row.appendChild(td5);
+
+  tableBody.appendChild(row);
+}
+
+// Validācija HH:MM
+function validateTime(input){
+  const regex=/^([01]\d|2[0-3]):([0-5]\d)$/;
+  if(!regex.test(input.value)&&input.value!==""){ 
+    input.classList.add("invalid"); 
+  } else { 
+    input.classList.remove("invalid"); 
+  }
+}
+
+// LocalStorage
+function saveData(){
+  const rows=tableBody.querySelectorAll("tr");
+  const data=[];
+  rows.forEach(row=>{
+    const selectAud=row.querySelector("select");
+    const inputs=row.querySelectorAll("input");
+    const selectRiimc=row.querySelector("select:nth-of-type(2)"); // otrs select ir RIIMC
+    data.push({ 
+      auditorija: selectAud.value, 
+      laiksNo: inputs[0].value, 
+      laiksLidz: inputs[1].value, 
+      macibu: inputs[2].value, 
+      lektors: inputs[3].value, 
+      riimc: selectRiimc.value 
+    });
+  });
+  localStorage.setItem("grafiksData",JSON.stringify(data));
+}
+
+function loadData(){
+  const data=JSON.parse(localStorage.getItem("grafiksData"))||[];
+  data.forEach(row=>addRow(row));
+}
+
+loadData();
+</script>
+</body>
+</html>
