@@ -6,7 +6,8 @@
 <title>Mājaslapa ar datumu un grafiku</title>
 <style>
 body { font-family: Arial; margin:0; padding:0; background:#f4f4f4; }
-header { display:flex; justify-content:space-between; align-items:center; padding:15px 20px; background:#007bff; color:#fff; font-size:18px; }
+header { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#007bff; color:#fff; font-size:18px; }
+header img { height:40px; }
 .date-time { font-weight:bold; }
 main { max-width:1200px; margin:30px auto; padding:20px; background:#fff; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.2);}
 table { width:100%; border-collapse:collapse; margin-top:20px;}
@@ -15,21 +16,23 @@ th { background:#f1f1f1;}
 button { padding:8px 15px; margin-top:10px; cursor:pointer; background:#28a745; color:white; border:none; border-radius:5px; font-size:14px;}
 select, input[type="text"] { width:100%; padding:5px; box-sizing:border-box;}
 input.invalid { border:2px solid red;}
+.time-range { display:flex; gap:5px; justify-content:center; }
+.time-range input { width:50%; }
 </style>
 </head>
 <body>
 <header>
-<div>Mācību grafiks</div>
+<img src="logo.png" alt="Logo">
 <div class="date-time" id="dateTime"></div>
 </header>
 <main>
-<h2>Plānotie pasākumi</h2>
+<h2>Mācību pasākumi</h2>
 <button onclick="addRow()">Pievienot rindu</button>
 <table id="dataTable">
 <thead>
 <tr>
 <th>Auditorija</th>
-<th>Laiks</th>
+<th>Laiks (no–līdz)</th>
 <th>Mācību pasākums</th>
 <th>Lektors</th>
 <th>RIIMC atbildīgais speciālists</th>
@@ -39,6 +42,7 @@ input.invalid { border:2px solid red;}
 </tbody>
 </table>
 </main>
+
 <script>
 // DATUMA UN LAIKA ATJAUNOŠANA UTC+2
 function updateDateTime() {
@@ -53,7 +57,7 @@ updateDateTime();
 const tableBody = document.querySelector("#dataTable tbody");
 const auditorijas = ["101","102","103","104","105","106","1. datortelpa","2. datortelpa","Zāle","Sporta zāle"];
 
-function addRow(data={auditorija:"", laiks:"", macibu:"", lektors:"", riimc:""}){
+function addRow(data={auditorija:"", laiksNo:"", laiksLidz:"", macibu:"", lektors:"", riimc:""}){
   const row = document.createElement("tr");
 
   // Auditorija
@@ -63,12 +67,15 @@ function addRow(data={auditorija:"", laiks:"", macibu:"", lektors:"", riimc:""})
   select.onchange=saveData;
   td1.appendChild(select);
 
-  // Laiks
+  // Laiks (no–līdz)
   const td2=document.createElement("td");
-  const inputTime=document.createElement("input");
-  inputTime.type="text"; inputTime.placeholder="12:00"; inputTime.value=data.laiks;
-  inputTime.oninput=()=>{validateTime(inputTime); saveData();}
-  td2.appendChild(inputTime);
+  const divRange=document.createElement("div"); divRange.className="time-range";
+  const inputNo=document.createElement("input"); inputNo.type="text"; inputNo.placeholder="12:00"; inputNo.value=data.laiksNo;
+  const inputLidz=document.createElement("input"); inputLidz.type="text"; inputLidz.placeholder="13:00"; inputLidz.value=data.laiksLidz;
+  inputNo.oninput=()=>{validateTime(inputNo); saveData();}
+  inputLidz.oninput=()=>{validateTime(inputLidz); saveData();}
+  divRange.appendChild(inputNo); divRange.appendChild(inputLidz);
+  td2.appendChild(divRange);
 
   // Mācību pasākums
   const td3=document.createElement("td");
@@ -99,7 +106,7 @@ function saveData(){
   rows.forEach(row=>{
     const select=row.querySelector("select");
     const inputs=row.querySelectorAll("input");
-    data.push({ auditorija:select.value, laiks:inputs[0].value, macibu:inputs[1].value, lektors:inputs[2].value, riimc:inputs[3].value });
+    data.push({ auditorija:select.value, laiksNo:inputs[0].value, laiksLidz:inputs[1].value, macibu:inputs[2].value, lektors:inputs[3].value, riimc:inputs[4].value });
   });
   localStorage.setItem("grafiksData",JSON.stringify(data));
 }
