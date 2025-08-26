@@ -6,25 +6,105 @@
 <title>Mājaslapa ar datumu un grafiku</title>
 <style>
 body {
-  background-image: url 'images/fons.jpg' ja ir mapē */
-  background-size: cover; /* aptver visu ekrānu */
-  background-position: center; /* centrē fonu */
-  background-attachment: fixed; /* lai fons paliek fiksēts */
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f4f4 url('images/fons.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
-  body { font-family: Arial; margin:0; padding:0; background:#f4f4f4; }
-header { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#007bff; color:#fff; font-size:18px; }
-header img { height:40px; }
-.date-time { font-weight:bold; }
-main { max-width:1200px; margin:30px auto; padding:20px; background:#fff; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.2);}
-table { width:100%; border-collapse:collapse; margin-top:20px;}
-th, td { border:1px solid #ccc; padding:10px; text-align:center;}
-th { background:#f1f1f1;}
-button { padding:8px 15px; margin-top:10px; cursor:pointer; background:#28a745; color:white; border:none; border-radius:5px; font-size:14px;}
-select, input[type="text"] { width:100%; padding:5px; box-sizing:border-box;}
-input.invalid { border:2px solid red;}
-.time-range { display:flex; gap:5px; justify-content:center; }
-.time-range input { width:50%; }
-.delete-btn { background:#dc3545; color:white; border:none; padding:2px 6px; border-radius:50%; cursor:pointer; font-weight:bold; margin-left:5px; }
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: #007bff;
+  color: #fff;
+  font-size: 18px;
+}
+
+header img {
+  height: 40px;
+}
+
+.date-time {
+  font-weight: bold;
+}
+
+main {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+h2 {
+  margin-top: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+th {
+  background: #f1f1f1;
+}
+
+button {
+  padding: 8px 15px;
+  margin-top: 10px;
+  cursor: pointer;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+select, input[type="text"], input[type="date"] {
+  width: 100%;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+input.invalid {
+  border: 2px solid red;
+}
+
+.time-range {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
+.time-range input {
+  width: 50%;
+}
+
+.delete-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 2px 6px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-weight: bold;
+  margin-left: 5px;
+}
+
+#filterDiv {
+  margin-top: 20px;
+}
 </style>
 </head>
 <body>
@@ -34,10 +114,15 @@ input.invalid { border:2px solid red;}
 </header>
 <main>
 <h2>Mācību pasākumi</h2>
+<div id="filterDiv">
+  <label for="filterDate">Skatīt pasākumus datumā:</label>
+  <input type="date" id="filterDate">
+</div>
 <button onclick="addRow()">Pievienot rindu</button>
 <table id="dataTable">
 <thead>
 <tr>
+<th>Datums</th>
 <th>Auditorija</th>
 <th>Laiks</th>
 <th>Mācību pasākums</th>
@@ -51,16 +136,21 @@ input.invalid { border:2px solid red;}
 </main>
 
 <script>
-// DATUMA UN LAIKA ATJAUNOŠANA UTC+2
+// DATUMA UN LAIKA ATJAUNOŠANA
 function updateDateTime() {
   const now = new Date();
-  const options = { timeZone:'Europe/Riga', year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'};
-  document.getElementById('dateTime').textContent = new Intl.DateTimeFormat('lv-LV', options).format(now);
+  const options = {
+    timeZone: 'Europe/Riga',
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', second: '2-digit'
+  };
+  document.getElementById('dateTime').textContent =
+    new Intl.DateTimeFormat('lv-LV', options).format(now);
 }
-setInterval(updateDateTime,1000);
+setInterval(updateDateTime, 1000);
 updateDateTime();
 
-// TABULAS FUNKCIJAS
+// DATU DEFINĪCIJAS
 const tableBody = document.querySelector("#dataTable tbody");
 const auditorijas = ["101","102","103","104","105","106","1. datortelpa","2. datortelpa","Zāle","Sporta zāle"];
 const riimcList = [
@@ -73,83 +163,93 @@ const riimcList = [
   "Inga Draveniece, t. 67105547",
   "Inga Liepniece, t. 67105544",
   "Iveta Razumovska, t. 67105534",
-  "Jeļena Griezne-Dubrovska, t.67105129",
+  "Jeļena Griezne-Dubrovska, t. 67105129",
   "Kitija Čipāne, t. 67105546",
   "Kristīne Kalniņa, t. 67105579",
   "Sarmīte Katkeviča, t. 67105581"
 ];
 
-function addRow(data={auditorija:"", laiksNo:"", laiksLidz:"", macibu:"", lektors:"", riimc:""}) {
+// PIEVIENO RINDU
+function addRow(data = {date:"", auditorija:"", laiksNo:"", laiksLidz:"", macibu:"", lektors:"", riimc:""}) {
   const row = document.createElement("tr");
+
+  // Datums
+  const tdDate = document.createElement("td");
+  const inputDate = document.createElement("input");
+  inputDate.type = "date";
+  inputDate.value = data.date;
+  inputDate.onchange = saveData;
+  tdDate.appendChild(inputDate);
 
   // Auditorija
   const td1 = document.createElement("td");
   const selectAud = document.createElement("select");
-  auditorijas.forEach(a => { 
-    const option = document.createElement("option"); 
-    option.value = a; 
-    option.textContent = a; 
-    if(data.auditorija === a) option.selected = true; 
+  auditorijas.forEach(a => {
+    const option = document.createElement("option");
+    option.value = a;
+    option.textContent = a;
+    if(data.auditorija === a) option.selected = true;
     selectAud.appendChild(option);
   });
   selectAud.onchange = saveData;
   td1.appendChild(selectAud);
 
-  // Laiks (no–līdz)
+  // Laiks
   const td2 = document.createElement("td");
-  const divRange = document.createElement("div"); divRange.className = "time-range";
-  const inputNo = document.createElement("input"); 
-  inputNo.type = "text"; 
-  inputNo.placeholder = "HH:MM"; 
-  inputNo.value = data.laiksNo; 
+  const divRange = document.createElement("div");
+  divRange.className = "time-range";
+  const inputNo = document.createElement("input");
+  inputNo.type = "text";
+  inputNo.placeholder = "HH:MM";
+  inputNo.value = data.laiksNo;
   inputNo.oninput = () => { validateTime(inputNo); saveData(); }
 
-  const inputLidz = document.createElement("input"); 
-  inputLidz.type = "text"; 
-  inputLidz.placeholder = "HH:MM"; 
-  inputLidz.value = data.laiksLidz; 
+  const inputLidz = document.createElement("input");
+  inputLidz.type = "text";
+  inputLidz.placeholder = "HH:MM";
+  inputLidz.value = data.laiksLidz;
   inputLidz.oninput = () => { validateTime(inputLidz); saveData(); }
 
-  divRange.appendChild(inputNo); 
+  divRange.appendChild(inputNo);
   divRange.appendChild(inputLidz);
   td2.appendChild(divRange);
 
   // Mācību pasākums
   const td3 = document.createElement("td");
-  const inputMacibu = document.createElement("input"); 
-  inputMacibu.type = "text"; 
-  inputMacibu.value = data.macibu; 
-  inputMacibu.oninput = saveData; 
+  const inputMacibu = document.createElement("input");
+  inputMacibu.type = "text";
+  inputMacibu.value = data.macibu;
+  inputMacibu.oninput = saveData;
   td3.appendChild(inputMacibu);
 
   // Lektors
   const td4 = document.createElement("td");
-  const inputLektors = document.createElement("input"); 
-  inputLektors.type = "text"; 
-  inputLektors.value = data.lektors; 
-  inputLektors.oninput = saveData; 
+  const inputLektors = document.createElement("input");
+  inputLektors.type = "text";
+  inputLektors.value = data.lektors;
+  inputLektors.oninput = saveData;
   td4.appendChild(inputLektors);
 
-  // RIIMC atbildīgais speciālists + dzēst poga
+  // RIIMC + dzēst poga
   const td5 = document.createElement("td");
   const selectRiimc = document.createElement("select");
-  riimcList.forEach(r => { 
-    const option = document.createElement("option"); 
-    option.value = r; 
-    option.textContent = r; 
-    if(data.riimc === r) option.selected = true; 
+  riimcList.forEach(r => {
+    const option = document.createElement("option");
+    option.value = r;
+    option.textContent = r;
+    if(data.riimc === r) option.selected = true;
     selectRiimc.appendChild(option);
   });
   selectRiimc.onchange = saveData;
   td5.appendChild(selectRiimc);
 
-  // Dzēšanas poga kā krustiņš
   const deleteBtn = document.createElement("button");
-  deleteBtn.textContent = "×"; // krustiņš
+  deleteBtn.textContent = "×";
   deleteBtn.className = "delete-btn";
-  deleteBtn.onclick = () => { row.remove(); saveData(); };
+  deleteBtn.onclick = () => { row.remove(); saveData(); renderFilteredTable(); };
   td5.appendChild(deleteBtn);
 
+  row.appendChild(tdDate);
   row.appendChild(td1);
   row.appendChild(td2);
   row.appendChild(td3);
@@ -157,44 +257,49 @@ function addRow(data={auditorija:"", laiksNo:"", laiksLidz:"", macibu:"", lektor
   row.appendChild(td5);
 
   tableBody.appendChild(row);
+  saveData();
+  renderFilteredTable();
 }
 
-// Validācija HH:MM
+// HH:MM validācija
 function validateTime(input){
-  const regex=/^([01]\d|2[0-3]):([0-5]\d)$/;
-  if(!regex.test(input.value)&&input.value!==""){ 
-    input.classList.add("invalid"); 
-  } else { 
-    input.classList.remove("invalid"); 
+  const regex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+  if(!regex.test(input.value) && input.value !== ""){
+    input.classList.add("invalid");
+  } else {
+    input.classList.remove("invalid");
   }
 }
 
-// LocalStorage
+// SAGLABĀ DATA
 function saveData(){
-  const rows=tableBody.querySelectorAll("tr");
-  const data=[];
-  rows.forEach(row=>{
-    const selectAud=row.querySelector("select");
-    const inputs=row.querySelectorAll("input");
-    const selectRiimc=row.querySelector("select:nth-of-type(2)"); // otrs select ir RIIMC
-    data.push({ 
-      auditorija: selectAud.value, 
-      laiksNo: inputs[0].value, 
-      laiksLidz: inputs[1].value, 
-      macibu: inputs[2].value, 
-      lektors: inputs[3].value, 
-      riimc: selectRiimc.value 
+  const rows = tableBody.querySelectorAll("tr");
+  const data = [];
+  rows.forEach(row => {
+    const inputs = row.querySelectorAll("input");
+    const selects = row.querySelectorAll("select");
+    data.push({
+      date: inputs[0].value,
+      auditorija: selects[0].value,
+      laiksNo: inputs[1].value,
+      laiksLidz: inputs[2].value,
+      macibu: inputs[3].value,
+      lektors: inputs[4].value,
+      riimc: selects[1].value
     });
   });
-  localStorage.setItem("grafiksData",JSON.stringify(data));
+  localStorage.setItem("grafiksData", JSON.stringify(data));
 }
 
+// IELĀDĒ DATA
 function loadData(){
-  const data=JSON.parse(localStorage.getItem("grafiksData"))||[];
-  data.forEach(row=>addRow(row));
+  const data = JSON.parse(localStorage.getItem("grafiksData")) || [];
+  data.forEach(row => addRow(row));
 }
 
 loadData();
-</script>
-</body>
-</html>
+
+// FILTRĒ UN RŪTO TABULU
+const filterDate = document.getElementById("filterDate");
+filterDate.onchange = renderFilteredTable;
+
