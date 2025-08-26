@@ -5,7 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mājaslapa ar datumu un grafiku</title>
 <style>
-body { font-family: Arial; margin:0; padding:0; background:#f4f4f4; }
+body {
+  background-image: url 'images/fons.jpg' ja ir mapē */
+  background-size: cover; /* aptver visu ekrānu */
+  background-position: center; /* centrē fonu */
+  background-attachment: fixed; /* lai fons paliek fiksēts */
+}
+  body { font-family: Arial; margin:0; padding:0; background:#f4f4f4; }
 header { display:flex; justify-content:space-between; align-items:center; padding:10px 20px; background:#007bff; color:#fff; font-size:18px; }
 header img { height:40px; }
 .date-time { font-weight:bold; }
